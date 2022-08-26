@@ -54,7 +54,7 @@ ui <- fluidPage(
     awesomeCheckbox("header", "Header", TRUE, status = "success"),
 
     p(
-      "Choose the correlation method you wish to use",
+      "Choose the correlation method you wish to use.",
       class = "instructText"
     ),
 
@@ -121,8 +121,6 @@ ui <- fluidPage(
       type = "tabs",
       tabPanel(
         "Results Output",
-    h3(htmlOutput("head3")),
-    verbatimTextOutput("desStats"),
 
     h3(htmlOutput("head1")),
 
@@ -137,6 +135,14 @@ ui <- fluidPage(
       plotOutput("corBsCiPlot"),
     ),
       ),
+    tabPanel(
+      "Exploring Data",
+      h3(htmlOutput("head3")),
+      verbatimTextOutput("desStats"),
+
+      h3(htmlOutput("head4")),
+      plotOutput("densityPlot"),
+    ),
     tabPanel(
       "Instructions",
       HTML(
@@ -191,12 +197,17 @@ ui <- fluidPage(
 
 <p><b>Note:</b> If you have any <u>missing data or empty cells</u>, enter <code>NA</code> as in the case of Group 4 #1 and Group 1 #30 above.</p>
 <p>Once you have the data ready, you can then import it into the application and run the correlation. To do so, follow these steps:</p>
-<ul>
-<li>Under <i>Choose file to upload</i> click <i>Browse...</i>. This will allow you to locate the file on your computer and upload the data to the application. Once you have done the upload, you'll see the name of the file and <i>Upload complete</i> displayed on the screen. You can check your data has been properly imported by checking the <i>Display data</i> checkbox under the <i>Submit</i> button.</li>
+<ol>
+<li>Under <i>Choose file to upload</i> click <i>Browse...</i>. This will allow you to locate the file on your computer and upload the data to the application. Once you have completed the upload, you will see the name of the file and <i>Upload complete</i> displayed on the screen. You can check your data has been properly imported by checking the <i>Display data</i> checkbox under the <i>Submit</i> button.</li>
+<li>If all is correct, select the different options to determine how your data will be read and processed.</li>
+<li>Choose the correlation method you want to use.</>
+<li>If you wish to generate bootstapped confidence intervals (CIs) then choose that option and the size of the bootstrap.</li>
+<li>Once you have selected and checked everything, click the <cite>Submit</cite> button.</li>
+<li>Output from your analysis will be displayed under the <cite>Results Output</cite> tab.</li>
+</ol>
+<p>Under the <cite>Exploring Data</cite> tab, the application displays descriptive statistics and a density (violin) plot. The latter shows the data distribution along with the median and 25th & 75th percentile lines. Use this to help you decide which correlation method to select. You can also look at the <code>skew</code> and <code>kurtosis</code> figures in the descriptive statistics to help here</p>
 "
       ),
-
-
              ),
     )
   )
@@ -271,7 +282,7 @@ server <- function(input, output) {
 
 
                  output$corBsCiPlot <- renderPlot({
-                   print(makecorPlot())
+                   makecorPlot()
                  })
 
                  }
@@ -284,8 +295,10 @@ server <- function(input, output) {
                  })
 
                  output$pairspanels <- renderPlot({
-                   print(makepairsPanels())
+                  (makepairsPanels())
                  })
+
+                 ## Descriptive Statistics
 
                  descript <- reactive({
                    x <- as.matrix(data())
@@ -307,35 +320,23 @@ server <- function(input, output) {
                    paste("Descriptive statistics")
                  )
 
+                 output$head4 <- renderText(
+                   paste("Density Plot")
+                 )
+
                  output$corrText <- renderText(
                    paste("Correlation coefficients (\"r\") and confidence intervals (\"lower\"; \"upper\").")
                  )
 
+                 ## Exploratory graphs
+
+                 output$densityPlot <- renderPlot({
+                   violin(data(), dots = TRUE, alpha = .5)
+                 })
+
                })
 
-  ## Regression
 
-  lmModel <- reactive({
-    req(data(), input$xvar, input$yvar)
-    #x <- as.numeric(data()[[as.name(input$xvar)]])
-    #y <- as.numeric(data()[[as.name(input$yvar)]])
-    current_formula <-
-      paste0(input$yvar, " ~ ", paste0(input$xvar, collapse = " + "))
-    current_formula <- as.formula(current_formula)
-    model <-
-      lm(current_formula, data = data(), na.action = na.exclude)
-    return(model)
-  })
-
-  output$lmSummary <- renderPrint({
-    req(lmModel())
-    summary(lmModel())
-  })
-  output$diagnosticPlot <- renderPlot({
-    req(lmModel())
-    par(mfrow = c(2, 2))
-    plot(lmModel())
-  })
 
 
 }

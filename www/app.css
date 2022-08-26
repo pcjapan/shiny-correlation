@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+body
+{
+	font-family: 'Open Sans', sans-serif;
+	line-height: 2;
+}
+
+textarea
+{
+	padding: 10px;
+	min-width: 20px;
+	position: relative;
+}
+
+h1 { width: 50%; }
+h3 { color: red; }
+
+h3.side
+{
+	font-style: italic;
+	border-bottom: none;
+}
+
+h4 { color: blue; }
+pre#StatSum { width: 800px; }
+pre#Regress, pre#RegressCI, pre#BsCI,
+pre#RegressRSET, pre#RegressRSE,
+pre#CIrg { width: 600px; }
+
+pre#RegressRSET
+{
+	background: none;
+	border: none;
+	font-weight: bold;
+}
+
+.panel { width: 50%; }
+
+.instructText, #text1
+{
+	font-style: italic;
+	margin-bottom: 6pt;
+}
+
+.btn.shiny-download-link { background: #FFFED3; }
+.warn { color: red; }
+
+#violin.shiny-plot-output, #qq.shiny-plot-output, #densityPlot.shiny-plot-output
+{
+	height: 75vh !important;
+	width: 30vw !important;
+}
+
+#pairspanels.shiny-plot-output
+{
+	height: 25vh !important;
+	width: 45vw !important;
+}
+
+.nav>li
+{
+	font-size: x-large;
+	font-style: normal;
+	font-weight: bolder;
+	color: #CCC;
+}
