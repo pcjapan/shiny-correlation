@@ -205,9 +205,8 @@ ui <- fluidPage(
 <li>Once you have selected and checked everything, click the <cite>Submit</cite> button.</li>
 <li>Output from your analysis will be displayed under the <cite>Results Output</cite> tab.</li>
 </ol>
-<p>Under the <cite>Exploring Data</cite> tab, the application displays descriptive statistics and a density (violin) plot. The latter shows the data distribution along with the median and 25th & 75th percentile lines. Use this to help you decide which correlation method to select. You can also look at the <code>skew</code> and <code>kurtosis</code> figures in the descriptive statistics to help here</p>
-"
-      ),
+<p>Under the <cite>Exploring Data</cite> tab, the application displays descriptive statistics and a density (violin) plot. The latter shows the data distribution along with the median and 25th & 75th percentile lines. Use this to help you decide which correlation method to select. You can also look at the <code>skew</code> and <code>kurtosis</code> figures in the descriptive statistics to help make your choice (note that the kurtosis value provided is an adjusted measure of <code>excess kurtosis</code>, <a href=\"https://www.rdocumentation.org/packages/psych/versions/2.2.5/topics/mardia\">details here</a>).</p>
+"      ),
              ),
     )
   )
