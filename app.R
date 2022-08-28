@@ -64,7 +64,7 @@ ui <- fluidPage(
       choices = c(
         "Pearson" = 'pearson',
         "Spearman" = 'spearman',
-        "Kendall Tau" = 'kendall'
+        "Kendall" = 'kendall'
       ),
       selected = "pearson" ,
       inline = TRUE,
@@ -119,6 +119,7 @@ ui <- fluidPage(
   mainPanel(
     tabsetPanel(
       type = "tabs",
+
       tabPanel(
         "Results Output",
 
@@ -127,6 +128,12 @@ ui <- fluidPage(
     plotOutput("pairspanels"),
     h4(htmlOutput(("corrText"))),
     verbatimTextOutput("correlCi.out"),
+
+    conditionalPanel(
+      condition = "input.method == 'pearson'",
+     h4(htmlOutput("head5")),
+    verbatimTextOutput("CoD")
+    ),
 
     conditionalPanel(
       condition = "input.btstpY == 1",
@@ -205,9 +212,17 @@ ui <- fluidPage(
 <li>Once you have selected and checked everything, click the <cite>Submit</cite> button.</li>
 <li>Output from your analysis will be displayed under the <cite>Results Output</cite> tab.</li>
 </ol>
+<p>The <cite>Results Output</cite> displays the following:</p>
+<ul><li><code>pairs.panels</code> for the data set. Details on this type of plot <a href=\"https://www.rdocumentation.org/packages/psych/versions/2.2.5/topics/pairs.panels\">can be found here</a>, but basically it shows the correlation coefficients along with scatterplots of the data including a regression line.</li>
+<li>The first table shows the correlation coefficinets (r), the lower and upper confidence intervals (CIs), and for convenience, <i>p</i> values to indicate the statistical significance of the tests. The <i>p</i>.adj value</li>
+<li>The figures in the <code>coefficient of determination</code> <i>R</i><sup>2</sup>) table show the percentage of variability in one variable that is shared by the other. If you have a <i>R</i><sup>2</sup> value of, for example, 51% for variable 1 and 2, then you can say that 51% of the variance is shared by variable 1 and 2. See <a href=\"https://hosted.jalt.org/test/PDF/Brown16.pdf\">this article</a> for further explanation.</li>
+<li>If you chose to calculate bootstrapped CIs, this output will also be displayed.</li>
+</ul>
 <p>Under the <cite>Exploring Data</cite> tab, the application displays descriptive statistics and a density (violin) plot. The latter shows the data distribution along with the median and 25th & 75th percentile lines. Use this to help you decide which correlation method to select. You can also look at the <code>skew</code> and <code>kurtosis</code> figures in the descriptive statistics to help make your choice (note that the kurtosis value provided is an adjusted measure of <code>excess kurtosis</code>, <a href=\"https://www.rdocumentation.org/packages/psych/versions/2.2.5/topics/mardia\">details here</a>).</p>
+
+
 "      ),
-             ),
+    ),
     )
   )
 ))
@@ -243,16 +258,32 @@ server <- function(input, output) {
 
                  correl <- reactive({
                    x <- as.matrix(data())
-                   cR <-  corr.test(x, method = input$method)
+                   cR <-  corr.test(x, method = input$method, adjust = "bonferroni")
                  })
 
 
                  ## Print the correlations and CIs
 
                  output$correlCi.out <- renderPrint({
-                   round(correl()$ci2, 3)
+                   print(correl(), short = FALSE)
                  })
 
+                 # Coefficient of determination (R^2)
+                 #
+               observeEvent (input$method, {if(input$method == "pearson"){
+                 output$head5 <- renderText(
+                   paste("Coefficient of determination (R squared)")
+                 )
+
+                 CoD <- reactive({
+                 CoD <- (correl()$r)^2 * 100
+                 round(CoD, 0)
+                 })
+
+                 output$CoD <- renderPrint({ CoD() })
+
+                 }}
+                  )
 
                  ## Bootstrapped CIs
 
@@ -315,16 +346,18 @@ server <- function(input, output) {
                    paste("Correlation results for ", input$method, " correlation")
                  )
 
+
+
                  output$head3 <- renderText(
                    paste("Descriptive statistics")
                  )
 
                  output$head4 <- renderText(
-                   paste("Density Plot")
+                   paste("Density plot")
                  )
 
                  output$corrText <- renderText(
-                   paste("Correlation coefficients (\"r\") and confidence intervals (\"lower\"; \"upper\").")
+                   paste("Correlation coefficients and confidence intervals")
                  )
 
                  ## Exploratory graphs

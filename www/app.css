@@ -48,11 +48,15 @@ pre#RegressRSET
 
 #violin.shiny-plot-output, #qq.shiny-plot-output, #densityPlot.shiny-plot-output
 {
-	height: 75vh !important;
+	height: 60vh !important;
 	width: 30vw !important;
 }
 
-#pairspanels.shiny-plot-output
+#corBsCiPlot.shiny-plot-output, #pairspanels.shiny-plot-output { 
+height: 31vh !important;
+width: 50vw !important; }
+
+.shiny-plot-output
 {
 	height: 25vh !important;
 	width: 45vw !important;
